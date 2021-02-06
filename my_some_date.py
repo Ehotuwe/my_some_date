@@ -35,6 +35,7 @@ class Date:
     def is_valid_date(self, day: int, month: int, year: int):
         """Проверяет, является ли дата корректной"""
 
+
     @property
     def day(self):
         return None
