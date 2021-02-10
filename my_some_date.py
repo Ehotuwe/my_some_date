@@ -20,12 +20,15 @@ class Date:
 
     def __init__(self, *args):
         if len(args) == 3 and all(isinstance(i, int) for i in args):
+
             self.day, self.month, self.year = int(args[0]), int(args[1]), int(args[2])
+            self.is_valid_date(self.day, self.month, self.year)
         elif len(args) == 1 and isinstance(args[0], str):
             values = args[0].split('.')
             if len(values) != 3:
                 raise ValueError('ошибка в строке')
             self.day, self.month, self.year = int(values[0]), int(values[1]), int(values[2])
+            self.is_valid_date(self.day, self.month, self.year)
         else:
             raise ValueError('много или мало значений')
 
@@ -57,11 +60,11 @@ class Date:
     def is_valid_date(cls, day: int, month: int, year: int):
         """Проверяет, является ли дата корректной"""
 
-        if not (1 <= year <= 2021):
+        if not (1 <= int(year) <= 2021):
             raise ValueError
-        if not (1 <= month <= 12):
+        if not (1 <= int(month) <= 12):
             raise ValueError
-        if not (1 <= day <= cls.get_max_day(month, year)):
+        if not (1 <= int(day) <= cls.get_max_day(month, year)):
             raise ValueError
 
     @property
@@ -79,6 +82,7 @@ class Date:
 
     @property
     def month(self):
+
         return self._month
 
     @month.setter
@@ -89,8 +93,10 @@ class Date:
         else:
             raise ValueError
 
+
     @property
     def year(self):
+
         return self._year
 
     @year.setter
@@ -112,8 +118,8 @@ class Date:
 
 
 def main():
-    date = Date(28, 2, 1995)
-    date2 = Date('01.02.1995')
+    date = Date(29, 2, 2016)
+    date2 = Date('30.03.2020')
     print(repr(date.day))
 
     print(date)
