@@ -19,16 +19,17 @@ class Date:
         """Создание даты из строки формата dd.mm.yyyy"""
 
     def __init__(self, *args):
+
         if len(args) == 3 and all(isinstance(i, int) for i in args):
 
-            self.day, self.month, self.year = int(args[0]), int(args[1]), int(args[2])
-            self.is_valid_date(self.day, self.month, self.year)
+            self._day, self._month, self._year = int(args[0]), int(args[1]), int(args[2])
+            self.is_valid_date(self._day, self._month, self._year)
         elif len(args) == 1 and isinstance(args[0], str):
             values = args[0].split('.')
             if len(values) != 3:
                 raise ValueError('ошибка в строке')
-            self.day, self.month, self.year = int(values[0]), int(values[1]), int(values[2])
-            self.is_valid_date(self.day, self.month, self.year)
+            self._day, self._month, self._year = int(values[0]), int(values[1]), int(values[2])
+            self.is_valid_date(self._day, self._month, self._year)
         else:
             raise ValueError('много или мало значений')
 
@@ -74,10 +75,9 @@ class Date:
     @day.setter
     def day(self, value: int):
         """value от 1 до 31. Проверять значение и корректность даты"""
-        if 1 <= value <= 31:
-            self._day = value
-        else:
-            raise ValueError
+        self.is_valid_date(value, self.month, self.year)
+        self._day = value
+
 
 
     @property
@@ -118,8 +118,8 @@ class Date:
 
 
 def main():
-    date = Date(29, 2, 2016)
-    date2 = Date('30.03.2020')
+    date = Date(30, 4, 2016)
+    date2 = Date('30.02.2020')
     print(repr(date.day))
 
     print(date)
