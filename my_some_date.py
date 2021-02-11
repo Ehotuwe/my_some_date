@@ -82,7 +82,6 @@ class Date:
 
     @property
     def month(self):
-
         return self._month
 
     @month.setter
@@ -96,7 +95,6 @@ class Date:
 
     @property
     def year(self):
-
         return self._year
 
     @year.setter
