@@ -62,11 +62,11 @@ class Date:
         """Проверяет, является ли дата корректной"""
 
         if not (1 <= int(year) <= 2021):
-            raise ValueError
+            raise ValueError('проблемы с годом')
         if not (1 <= int(month) <= 12):
-            raise ValueError
+            raise ValueError('проблемы с месяцем')
         if not (1 <= int(day) <= cls.get_max_day(month, year)):
-            raise ValueError
+            raise ValueError('проблемы с днем')
 
     @property
     def day(self):
@@ -75,10 +75,9 @@ class Date:
     @day.setter
     def day(self, value: int):
         """value от 1 до 31. Проверять значение и корректность даты"""
+        print('setter_day')
         self.is_valid_date(value, self.month, self.year)
         self._day = value
-
-
 
     @property
     def month(self):
@@ -87,11 +86,9 @@ class Date:
     @month.setter
     def month(self, value: int):
         """value от 1 до 12. Проверять значение и корректность даты"""
-        if 1 <= value <= 12:
-            self._month = value
-        else:
-            raise ValueError
-
+        print('setter_month')
+        self.is_valid_date(self.day, value, self.year)
+        self._month = value
 
     @property
     def year(self):
@@ -100,13 +97,13 @@ class Date:
     @year.setter
     def year(self, value: int):
         """value от 1 до ... . Проверять значение и корректность даты"""
-        if 1 <= value <= 2021:
-            self._year = value
-        else:
-            raise ValueError
+        print('setter_year')
+        self.is_valid_date(self.day, self.month, value)
+        self._year = value
 
     def __sub__(self, other: "Date") -> int:
         """Разница между датой self и other (-)"""
+
 
     def __add__(self, other: TimeDelta) -> "Date":
         """Складывает self и некий timedeltа. Возвращает НОВЫЙ инстанс Date, self не меняет (+)"""
@@ -116,12 +113,14 @@ class Date:
 
 
 def main():
-    date = Date(30, 4, 2016)
-    date2 = Date('30.02.2020')
-    print(repr(date.day))
+    date = Date(29, 2, 2016)
+    date2 = Date('28.02.2021')
+    print(repr(date2.month))
 
     print(date)
     print(date2)
+    # date.day=3
+    # print(date)
 
 
 if __name__ == '__main__':
