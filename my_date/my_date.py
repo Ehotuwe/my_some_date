@@ -1,5 +1,6 @@
 from typing import Optional, overload
-
+import logging
+logger = logging.getLogger(__name__)
 
 class TimeDelta:
     def __init__(self, days: Optional[int] = None, months: Optional[int] = None, years: Optional[int] = None):
@@ -19,26 +20,30 @@ class Date:
         """Создание даты из строки формата dd.mm.yyyy"""
 
     def __init__(self, *args):
-
+        logger.debug('start init')
         if len(args) == 3 and all(isinstance(i, int) for i in args):
 
             self._day, self._month, self._year = int(args[0]), int(args[1]), int(args[2])
+            logger.debug('created (day, month, year)')
             self.is_valid_date(self._day, self._month, self._year)
         elif len(args) == 1 and isinstance(args[0], str):
             values = args[0].split('.')
             if len(values) != 3:
                 raise ValueError('ошибка в строке')
             self._day, self._month, self._year = int(values[0]), int(values[1]), int(values[2])
+            logger.debug('created (day.month.year)')
             self.is_valid_date(self._day, self._month, self._year)
         else:
             raise ValueError('много или мало значений')
-
+        logger.debug('end init')
     def __str__(self) -> str:
         """Возвращает дату в формате dd.mm.yyyy"""
-        return f"{self.day}.{self.month}.{self.year}"
+        logger.debug('call __str__')
+        return f"{self.day:02d}.{self.month:02d}.{self.year:04d}"
 
     def __repr__(self) -> str:
         """Возвращает дату в формате Date(day, month, year)"""
+        logger.debug('call __repr__')
         return f"({self.day},{self.month},{self.year})"
 
     @classmethod
@@ -52,10 +57,7 @@ class Date:
     @classmethod
     def get_max_day(cls, month: int, year: int) -> int:
         """Возвращает максимальное количество дней в месяце для указанного года"""
-        if cls.is_leap_year(year) == True:
-            return cls.day_in_month[1][month - 1]
-        else:
-            return cls.day_in_month[0][month - 1]
+        return cls.day_in_month[cls.is_leap_year(year)][month - 1]
 
     @classmethod
     def is_valid_date(cls, day: int, month: int, year: int):
@@ -70,40 +72,46 @@ class Date:
 
     @property
     def day(self):
+        logger.debug('call property day')
         return self._day
 
     @day.setter
     def day(self, value: int):
         """value от 1 до 31. Проверять значение и корректность даты"""
-        print('setter_day')
+        logger.debug('call setter day with value %s', value)
+
         self.is_valid_date(value, self.month, self.year)
+        logger.debug('valid day')
         self._day = value
 
     @property
     def month(self):
+        logger.debug('call property month')
         return self._month
 
     @month.setter
     def month(self, value: int):
         """value от 1 до 12. Проверять значение и корректность даты"""
-        print('setter_month')
+        logger.debug('call setter month with value %s', value)
         self.is_valid_date(self.day, value, self.year)
+        logger.debug('valid month')
         self._month = value
 
     @property
     def year(self):
+        logger.debug('call property year')
         return self._year
 
     @year.setter
     def year(self, value: int):
         """value от 1 до ... . Проверять значение и корректность даты"""
-        print('setter_year')
+        logger.debug('call setter year with value %s', value)
         self.is_valid_date(self.day, self.month, value)
+        logger.debug('valid year')
         self._year = value
 
     def __sub__(self, other: "Date") -> int:
         """Разница между датой self и other (-)"""
-
 
     def __add__(self, other: TimeDelta) -> "Date":
         """Складывает self и некий timedeltа. Возвращает НОВЫЙ инстанс Date, self не меняет (+)"""
@@ -113,12 +121,18 @@ class Date:
 
 
 def main():
-    date = Date(29, 2, 2016)
-    date2 = Date('28.02.2021')
-    print(repr(date2.month))
-
-    print(date)
+    logging.basicConfig()
+    logger.setLevel(logging.DEBUG)
+    logger.debug('start main')
+    # date = Date(1, 1, 2001)
+    logger.debug('created date')
+    date2 = Date('1.1.2001')
+    logger.debug('created date2')
+    # print(repr(date2.month))
+    #
+    # print(date)
     print(date2)
+    logger.debug('end main')
     # date.day=3
     # print(date)
 
