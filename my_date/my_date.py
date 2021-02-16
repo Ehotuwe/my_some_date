@@ -1,6 +1,8 @@
 from typing import Optional, overload
 import logging
+
 logger = logging.getLogger(__name__)
+
 
 class TimeDelta:
     def __init__(self, days: Optional[int] = None, months: Optional[int] = None, years: Optional[int] = None):
@@ -36,6 +38,7 @@ class Date:
         else:
             raise ValueError('много или мало значений')
         logger.debug('end init')
+
     def __str__(self) -> str:
         """Возвращает дату в формате dd.mm.yyyy"""
         logger.debug('call __str__')
@@ -112,6 +115,51 @@ class Date:
 
     def __sub__(self, other: "Date") -> int:
         """Разница между датой self и other (-)"""
+        if isinstance(other, Date):
+            all_year = 0
+            a_delta_days_b = 0
+            if self.year < other.year:
+
+                delta_days_a = self.day
+                delta_days_b = other.day
+                for leap in range(self.year, other.year):
+                    if self.is_leap_year(leap):
+                        all_year += 366
+                    else:
+                        all_year += 365
+                for month_a in range(1, self.month):
+                    delta_days_a += self.get_max_day(month_a, self.year)
+                for month_b in range(1, other.month):
+                    delta_days_b += other.get_max_day(month_b, other.year)
+
+                return all_year - delta_days_a + delta_days_b
+
+            elif self.year > other.year:
+                delta_days_b = self.day
+                delta_days_a = other.day
+                for leap in range(other.year, self.year):
+                    if self.is_leap_year(leap):
+                        all_year += 366
+                    else:
+                        all_year += 365
+                for month_a in range(1, self.month):
+                    delta_days_b += self.get_max_day(month_a, self.year)
+                for month_b in range(1, other.month):
+                    delta_days_a += other.get_max_day(month_b, other.year)
+
+                return all_year - delta_days_a + delta_days_b
+
+            elif self.year == other.year:
+                days_a = self.day
+                days_b = other.day
+
+                for month_a in range(1, self.month):
+                    days_a += self.get_max_day(month_a, self.year)
+                for month_b in range(1, other.month):
+                    days_b += other.get_max_day(month_b, other.year)
+                a_delta_days_b += abs(days_a - days_b)
+
+                return a_delta_days_b
 
     def __add__(self, other: TimeDelta) -> "Date":
         """Складывает self и некий timedeltа. Возвращает НОВЫЙ инстанс Date, self не меняет (+)"""
@@ -124,14 +172,18 @@ def main():
     logging.basicConfig()
     logger.setLevel(logging.DEBUG)
     logger.debug('start main')
-    # date = Date(1, 1, 2001)
+    date = Date(1, 3, 2018)
     logger.debug('created date')
     date2 = Date('1.1.2001')
     logger.debug('created date2')
+    date3 = Date(2, 1, 2015)
+    logger.debug('created date')
+    print(date - date3)
     # print(repr(date2.month))
-    #
+
     # print(date)
-    print(date2)
+    # print(date2)
+    # print()
     logger.debug('end main')
     # date.day=3
     # print(date)
