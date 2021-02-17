@@ -113,31 +113,30 @@ class Date:
         logger.debug('valid year')
         self._year = value
 
+    @classmethod
+    def count_day(cls, day: int, month: int, year: int):
+        """Возвращает количество дней от 01.01.01 по текущую дату"""
+        all_year_s = 0
+
+        delta_days_s = day
+
+        for leap in range(1, year):
+            if cls.is_leap_year(leap):
+                all_year_s += 366
+            else:
+                all_year_s += 365
+
+        for month_a in range(1, month):
+            delta_days_s += cls.get_max_day(month_a, year)
+
+        return all_year_s + delta_days_s
+
     def __sub__(self, other: "Date") -> int:
         """Разница между датой self и other (-)"""
         if isinstance(other, Date):
-            all_year_s = 0
-            all_year_o = 0
-
-            delta_days_s = self.day
-            delta_days_o = other.day
-            for leap in range(1, self.year):
-                if self.is_leap_year(leap):
-                    all_year_s += 366
-                else:
-                    all_year_s += 365
-            for leap in range(1, other.year):
-                if self.is_leap_year(leap):
-                    all_year_o += 366
-                else:
-                    all_year_o += 365
-            for month_a in range(1, self.month):
-                delta_days_s += self.get_max_day(month_a, self.year)
-            for month_b in range(1, other.month):
-                delta_days_o += other.get_max_day(month_b, other.year)
-            all_self_day = all_year_s + delta_days_s
-            all_self_other = all_year_o + delta_days_o
-            return all_self_day - all_self_other
+            all_self_day = self.count_day(self.day, self.month, self.year)
+            all_other_day = other.count_day(other.day, other.month, other.year)
+            return all_self_day - all_other_day
 
     def __add__(self, other: TimeDelta) -> "Date":
         """Складывает self и некий timedeltа. Возвращает НОВЫЙ инстанс Date, self не меняет (+)"""
