@@ -157,28 +157,24 @@ class Date:
     def __add__(self, other: TimeDelta) -> "Date":
         """Складывает self и некий timedeltа. Возвращает НОВЫЙ инстанс Date, self не меняет (+)"""
         if isinstance(other, TimeDelta):
-            new_month = (((self.month - 1) + other.month) % 12) + 1
-            new_year = (self.year + other.year + (((self.month - 1) + other.month) // 12))
-            new_day = self.day
-            while other.day + new_day > self.get_max_day(new_month, new_year):
 
-                if other.day > self.get_max_day(new_month, new_year):
-                    other.day -= self.get_max_day(new_month, new_year)
-                    if new_month + 1 < 12:
-                        new_month += 1
-                        if new_day > self.get_max_day(new_month, new_year):
-                            new_day -= self.get_max_day(new_month, new_year)
-                            new_month += 1
+            new_day_month = self.month
+            new_day_year = self.year
+            new_day = self.day
+            a = 0
+            while other.day > a:
+                a += 1
+                if new_day + 1 > self.get_max_day(new_day_month, new_day_year):
+                    new_day = 1
+                    if new_day_month + 1 < 12:
+                        new_day_month += 1
                     else:
-                        new_month = 1
-                        new_year += 1
+                        new_day_month = 1
+                        new_day_year += 1
                 else:
-                    new_day = (new_day+other.day) - self.get_max_day(new_month, new_year)
-                    if new_month + 1 < 12:
-                        new_month += 1
-                    else:
-                        new_month = 1
-                        new_year += 1
+                    new_day += 1
+            new_month = (((self.month - 1) + other.month + new_day_month) % 12) + 1
+            new_year = (self.year + other.year + (((self.month - 1) + other.month+new_day_month) // 12))
             return Date(new_day, new_month, new_year)
 
     def __iadd__(self, other: TimeDelta) -> "Date":
@@ -186,10 +182,10 @@ class Date:
 
 
 def main():
-    logging.basicConfig()
-    logger.setLevel(logging.DEBUG)
+    # logging.basicConfig()
+    # logger.setLevel(logging.DEBUG)
     logger.debug('start main')
-    date = Date(31, 12, 2016)
+    date = Date(1, 1, 2016)
     logger.debug('created date')
     date2 = Date('1.1.2001')
     logger.debug('created date2')
@@ -198,7 +194,7 @@ def main():
     logger.debug('created date')
     print(date)
 
-    print(date + TimeDelta(days=100))
+    print(date + TimeDelta(days=30))
 
     print(date)
     # print(repr(date2.month))
