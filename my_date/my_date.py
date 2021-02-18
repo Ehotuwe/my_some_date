@@ -6,7 +6,23 @@ logger = logging.getLogger(__name__)
 
 class TimeDelta:
     def __init__(self, days: Optional[int] = None, months: Optional[int] = None, years: Optional[int] = None):
-        ...
+        if days is not None and isinstance(days, int) and days > 0:
+            self.day = days
+        else:
+            self.day = 0
+        if months is not None and isinstance(months, int) and months > 0:
+            self.month = months
+        else:
+            self.month = 0
+        if years is not None and isinstance(years, int) and years > 0:
+            self.year = years
+        else:
+            self.year = 0
+
+        # if all(isinstance(i, int) and i > 0 for i in [days, months, years]):
+        #     self.day, self.month, self.year = days, months, years
+        # else:
+        #     self.day, self.month, self.year = None, None, None
 
 
 class Date:
@@ -66,7 +82,7 @@ class Date:
     def is_valid_date(cls, day: int, month: int, year: int):
         """Проверяет, является ли дата корректной"""
 
-        if not (1 <= int(year) <= 2021):
+        if not (1 <= int(year) <= 999999):
             raise ValueError('проблемы с годом')
         if not (1 <= int(month) <= 12):
             raise ValueError('проблемы с месяцем')
@@ -140,6 +156,30 @@ class Date:
 
     def __add__(self, other: TimeDelta) -> "Date":
         """Складывает self и некий timedeltа. Возвращает НОВЫЙ инстанс Date, self не меняет (+)"""
+        if isinstance(other, TimeDelta):
+            new_month = (((self.month - 1) + other.month) % 12) + 1
+            new_year = (self.year + other.year + (((self.month - 1) + other.month) // 12))
+            new_day = self.day
+            while other.day + new_day > self.get_max_day(new_month, new_year):
+
+                if other.day > self.get_max_day(new_month, new_year):
+                    other.day -= self.get_max_day(new_month, new_year)
+                    if new_month + 1 < 12:
+                        new_month += 1
+                        if new_day > self.get_max_day(new_month, new_year):
+                            new_day -= self.get_max_day(new_month, new_year)
+                            new_month += 1
+                    else:
+                        new_month = 1
+                        new_year += 1
+                else:
+                    new_day = (new_day+other.day) - self.get_max_day(new_month, new_year)
+                    if new_month + 1 < 12:
+                        new_month += 1
+                    else:
+                        new_month = 1
+                        new_year += 1
+            return Date(new_day, new_month, new_year)
 
     def __iadd__(self, other: TimeDelta) -> "Date":
         """Добавляет к self некий timedelta меняя сам self (+=)"""
@@ -149,13 +189,18 @@ def main():
     logging.basicConfig()
     logger.setLevel(logging.DEBUG)
     logger.debug('start main')
-    date = Date(1, 2, 2016)
+    date = Date(31, 12, 2016)
     logger.debug('created date')
     date2 = Date('1.1.2001')
     logger.debug('created date2')
     date3 = Date(1, 3, 2018)
+    # date4 = TimeDelta(days=66,years=70)
     logger.debug('created date')
-    print(date - date3)
+    print(date)
+
+    print(date + TimeDelta(days=100))
+
+    print(date)
     # print(repr(date2.month))
 
     # print(date)
