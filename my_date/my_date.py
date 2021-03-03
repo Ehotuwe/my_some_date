@@ -82,11 +82,11 @@ class Date:
     def is_valid_date(cls, day: int, month: int, year: int):
         """Проверяет, является ли дата корректной"""
 
-        if not (1 <= int(year) <= 999999):
+        if not isinstance(year, int) or not (1 <= int(year) <= 9999):
             raise ValueError('проблемы с годом')
-        if not (1 <= int(month) <= 12):
+        if not isinstance(month, int) or not (1 <= int(month) <= 12):
             raise ValueError('проблемы с месяцем')
-        if not (1 <= int(day) <= cls.get_max_day(month, year)):
+        if not isinstance(day, int) or not (1 <= int(day) <= cls.get_max_day(month, year)):
             raise ValueError('проблемы с днем')
 
     @property
@@ -173,51 +173,42 @@ class Date:
                         new_day_year += 1
                 else:
                     new_day += 1
-            new_day_month = (((new_day_month - 1) + other.month) % 12) + 1
+            new_month = (((new_day_month - 1) + other.month) % 12) + 1
 
             new_day_year = (new_day_year + other.year + (((new_day_month - 1) + other.month) // 12))
-            if new_day > self.get_max_day(new_day_month, new_day_year):
-                new_day -= self.get_max_day(new_day_month, new_day_year)
-                new_day_month += 1
+            if new_day > self.get_max_day(new_month, new_day_year):
+                new_day -= self.get_max_day(new_month, new_day_year)
+                new_month += 1
 
-            return Date(new_day, new_day_month, new_day_year)
+            return Date(new_day, new_month, new_day_year)
 
     def __iadd__(self, other: TimeDelta) -> "Date":
         """Добавляет к self некий timedelta меняя сам self (+=)"""
-        if isinstance(other, TimeDelta):
-            a = 0
-            while other.day > a:
-                a += 1
-                if self.day + 1 > self.get_max_day(self.month, self.year):
-                    self.day = 1
-                    if self.month + 1 <= 12:
-                        self.month += 1
-                    else:
-                        self.month = 1
-                        self.year += 1
-                else:
-                    self.day += 1
-            self.month = (((self.month - 1) + other.month) % 12) + 1
-            self.year = (self.year + other.year + (((self.month - 1) + other.month) // 12))
-            return self
+        new_date = Date(self.day, self.month, self.year)
+        return new_date + other
 
 
 def main():
     # logging.basicConfig()
     # logger.setLevel(logging.DEBUG)
     logger.debug('start main')
-    date = Date(31, 1, 2016)
-    logger.debug('created date')
-    date2 = Date('1.1.2001')
-    logger.debug('created date2')
-    date3 = Date(1, 3, 2018)
-    # date4 = TimeDelta(days=66,years=70)
-    logger.debug('created date')
+    date = Date(1, 2, 2016)
+    # date.month = 14
+    # logger.debug('created date')
+    # date2 = Date('1.1.2001')
+    # logger.debug('created date2')
+    # date3 = Date(1, 3, 2018)
+    # date4 = TimeDelta(months=6)
+    # logger.debug('created date')
+    print(date)
+    # print(date + date4)
     print(date)
 
-    print(date + TimeDelta(months=1))
-
+    date += TimeDelta(days=40, months=6, years=6)
     print(date)
+
+    # print(repr(date))
+    # print(date)
     # print(repr(date2.month))
 
     # print(date)
