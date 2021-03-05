@@ -179,13 +179,21 @@ class Date:
             if new_day > self.get_max_day(new_month, new_day_year):
                 new_day -= self.get_max_day(new_month, new_day_year)
                 new_month += 1
+                if new_month > 12:
+                    new_month = 1
+                    new_day_year += 1
 
             return Date(new_day, new_month, new_day_year)
 
     def __iadd__(self, other: TimeDelta) -> "Date":
         """Добавляет к self некий timedelta меняя сам self (+=)"""
-        new_date = Date(self.day, self.month, self.year)
-        return new_date + other
+        if isinstance(other, TimeDelta):
+            new_date = self + other
+            self.day = new_date.day
+            self.month = new_date.month
+            self.year = new_date.year
+
+            return self
 
 
 def main():
@@ -200,13 +208,13 @@ def main():
     # date3 = Date(1, 3, 2018)
     # date4 = TimeDelta(months=6)
     # logger.debug('created date')
-    print(date)
     # print(date + date4)
     print(date)
+    new_date = date
 
-    date += TimeDelta(days=40, months=6, years=6)
+    new_date += TimeDelta(days=40, months=6, years=6)
     print(date)
-
+    print(new_date)
     # print(repr(date))
     # print(date)
     # print(repr(date2.month))
